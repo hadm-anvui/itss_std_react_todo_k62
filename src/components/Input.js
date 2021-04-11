@@ -33,7 +33,7 @@ function Input(props) {
 
   return (
     <div className="panel-block">
-    <input value={item.text} onKeyDown={handleKeyDown} onChange={handleOnChange} type="text" autocomplete="off" style={{width: "100%"}} />
+    <input value={item.text} onKeyDown={handleKeyDown} onChange={handleOnChange} type="text" autocomplete="off" className="input" />
     </div>
   );
 }

@@ -10,13 +10,18 @@ function TodoItem(props) {
   
   const [clicked, setClicked] = React.useState(false);
   
+  useEffect(() => {
+    setClicked(props.item.done)
+  }, [props.item.done])
+  
   const handleOnClick = () => {
     setClicked(!clicked);
+    props.toggleItem(props.item.key)
   }
   
   return (
     <label className={clicked ? "panel-block has-text-grey-light" : "panel-block"}>
-        <input onClick={handleOnClick} type="checkbox" />
+        <input type="checkbox" checked={clicked} onClick={handleOnClick} />
         {props.item.text}
     </label>
   );
