@@ -12,7 +12,10 @@ import { useState, useEffect } from 'react';
 const STORAGE_KEY = 'itss-todo';
 
 function useStorage() {
-  const [items, setItems] = useState([]);
+  
+  let initialItems = localStorage.getItem(STORAGE_KEY) === null ? [] : JSON.parse(localStorage.getItem(STORAGE_KEY));
+  
+  const [items, setItems] = useState(initialItems);
 　
 　/* 副作用を使う */
   useEffect(() => {
@@ -20,11 +23,13 @@ function useStorage() {
   }, []);
 
   const putItems = items => {
-    
+    setItems(items)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
   };
 
   const clearItems = () => {
-    
+    setItems([])
+    localStorage.setItem(STORAGE_KEY, '[]')
   };
 
   return [items, putItems, clearItems];
