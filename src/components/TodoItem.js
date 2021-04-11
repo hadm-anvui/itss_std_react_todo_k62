@@ -16,7 +16,7 @@ function TodoItem(props) {
   
   return (
     <label className={clicked ? "panel-block has-text-grey-light" : "panel-block"}>
-        <input onClick={() => handleOnClick()} type="checkbox" />
+        <input onClick={handleOnClick} type="checkbox" />
         {props.item.text}
     </label>
   );
