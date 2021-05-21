@@ -1,11 +1,4 @@
-import React, { useState, useEffect } from 'react';
-
-/* 
-  【Todoのデータ構成】
-　・key：Todoを特定するID（String）
-　・text：Todoの内容（String）
-　・done：完了状態（Boolean true:完了済み,, false:未完了）
-*/
+import React, { useState } from 'react';
 
 /* コンポーネント */
 import TodoItem from './TodoItem';
@@ -13,69 +6,62 @@ import Input from './Input';
 import Filter from './Filter';
 
 /* カスタムフック */
-import useStorage from '../hooks/storage';
+import useFirestoreStorage from '../hooks/firestoreStorage';
 
 /* ライブラリ */
-import {getKey} from "../lib/util";
 
 function Todo() {
-  const [storageItems, storagePutItems, storageClearItems] = useStorage();
+  const [items, firebaseAddItem, firebaseUpdateItem, firebaseClearItems] = useFirestoreStorage();
   
-  const [items, putItems] = React.useState([...storageItems]);
+  const [filter, setFilter] = useState('ALL');
+
+  const displayItems = items.filter(item => {
+    if (filter === 'ALL') return true;
+    if (filter === 'TODO') return !item.done;
+    if (filter === 'DONE') return item.done;
+  });
   
-  const [filterBy, setFilterBy] = React.useState('全て')
+  const handleCheck = checked => {
+    firebaseUpdateItem(checked);
+  };
   
-  const addItem = (newItem) => {
-    let newList = [...items]
-    newList.push(newItem)
-    putItems(newList);
-    storagePutItems(newList);
-  }
+  const handleAdd = text => {
+    firebaseAddItem({ text, done: false });
+  };
   
-  const toggleItem = (itemKey) => {
-    let tempList = [...items];
-    tempList.forEach(itm => {
-      if (itm.key === itemKey) {
-        itm.done = !itm.done
-      }
-    })
-    putItems(tempList)
-    storagePutItems(tempList)
-  }
-  
-  const handleClear = () => {
-    storageClearItems()
-    putItems([])
-  }
-  
-  var toShowItems = [...items]
-  
-  if(filterBy === '未完了') {
-    toShowItems = toShowItems.filter(item => item.done === false)
-  } else if (filterBy === '完了済み') {
-    toShowItems = toShowItems.filter(item => item.done === true)
-  }
+  const handleFilterChange = value => setFilter(value);
 
   return (
-    <div className="panel">
+    <article className="panel is-danger">
       <div className="panel-heading">
-        ITSS ToDoアプリ
+        <span className="icon-text">
+          <span className="icon">
+            <i className="fas fa-calendar-check"></i>
+          </span>
+          <span> ITSS Todoアプリ</span>
+        </span>
       </div>
-      
-      <Input addItem={addItem}/>
-      
-      <Filter setFilterBy={setFilterBy} />
-      
-      {toShowItems.map(item => (
-        <TodoItem item={item} toggleItem={toggleItem} />
+      <Input onAdd={handleAdd} />
+      <Filter
+        onChange={handleFilterChange}
+        value={filter}
+      />
+      {displayItems.map((item, index) => (
+        <TodoItem 
+          key={index}
+          item={item}
+          onCheck={handleCheck}
+        />
       ))}
       <div className="panel-block">
-        {toShowItems.length} items
+        {displayItems.length} items
       </div>
-      
-      <div className="button is-danger is-outlined is-fullwidth" onClick={handleClear}>全てのToDoを削除</div>
-
-    </div>
+      <div className="panel-block">
+        <button className="button is-light is-fullwidth" onClick={firebaseClearItems}>
+          全てのToDoを削除
+        </button>
+      </div>
+    </article>
   );
 }
 

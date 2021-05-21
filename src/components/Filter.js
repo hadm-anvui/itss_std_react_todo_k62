@@ -1,45 +1,27 @@
-/* 
-  【Filterコンポーネント】
-　・該当するTodoをステータス毎にで分けてリスト表示する
-　・タブで表示する
-　・サポートするステータスは「すべて」「未完了」「完了済み」
-*/
+function Filter({ value, onChange }) {
 
-import React, { useState } from 'react';
+  const handleClick = (key, e) => {
+    e.preventDefault();
+    onChange(key);
+  };
 
-function Filter(props) {
-  
-  const [clicked, setClicked] = React.useState('全て')
-  const items = [
-    '全て',
-    '未完了',
-    '完了済み'
-  ]
-  
-  const tabLinkStyle = {
-    marginRight: "10px", 
-    marginLeft: "10px",
-    color: "blue"
-  }
-  
-  const handleOnClick = (item) => {
-    setClicked(item)
-    props.setFilterBy(item)
-  }
-  
   return (
     <div className="panel-tabs">
-      <div className="tabs is-centered">
-        <ul>
-        
-          {items.map(item => (
-            <li className={clicked === item ? 'is-active' : ''} onClick={()=>handleOnClick(item)}><a>{item}</a></li>
-          ))}
-        
-        </ul>
-      </div>
-      
-      
+      <a
+        href="/#"
+        onClick={handleClick.bind(null, 'ALL')}
+        className={value === 'ALL' ?  'is-active' : ''}
+      >全て</a>
+      <a
+        href="/#"
+        onClick={handleClick.bind(null, 'TODO')}
+        className={value === 'TODO' ?  'is-active' : ''}
+      >未完了</a>
+      <a
+        href="/#"
+        onClick={handleClick.bind(null, 'DONE')}
+        className={value === 'DONE' ?  'is-active' : ''}
+      >完了済み</a>
     </div>
   );
 }
